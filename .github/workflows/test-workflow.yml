@@ -19,3 +19,4 @@ jobs:
         with:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           golangEnabled: "false"
+          markdownEnabled: "false"
