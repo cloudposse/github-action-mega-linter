@@ -1,23 +1,71 @@
-name: 'Example composite GitHub action'
-description: 'Example composite GitHub action'
-author: hello@cloudposse.com
+name: "Mega-Linter"
+description: "A GitHub Action to lint terraform, golang, markdown and yaml code."
+author: Cloud Posse <hello@cloudposse.com>
 branding:
-  icon: 'file'
-  color: 'white'
+  icon: cloud-lightning
+  color: blue
 inputs:
-  param1:
+  githubToken:
+    description: "The GitHub token to use for authentication."
     required: true
-    description: "Input parameter placeholder"
+  golangEnabled:
+    description: "Whether to run golang linting checks."
+    required: true
     default: "true"
-outputs:
-  result1:
-    description: "Output result placeholder"
-    value: "${{ steps.context.outputs.action-result }}"
-runs:
-  using: "composite"
-  steps:
-    - id: context
-      shell: bash
-      run: |
-          echo "::set-output name=action-result::${{ inputs.param1 }}"
+  golangReporter:
+    required: true
+    description: The reviewdog reporter to use for golang code.
+    default: "github-pr-check"
+  golangSourceDir:
+    required: true
+    description: The directory containing the source code to test
+    default: "."
+  markdownEnabled:
+    description: "Whether to run markdown linting checks."
+    required: true
+    default: "true"
+  markdownReporter:
+    required: true
+    description: The reviewdog reporter to use for markdown code.
+    default: "github-pr-check"
+  terraformEnabled:
+    description: "Whether to run terraform linting checks."
+    required: true
+    default: "true"
+  terraformReporter:
+    required: true
+    description: The reviewdog reporter to use for terraform code.
+    default: "github-pr-check"
 
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@v3
+
+    - name: golang
+      uses: reviewdog/action-golangci-lint@v2
+      if: ${{ inputs.golangEnabled == 'true' }}
+      with:
+        github_token: ${{ inputs.githubToken }}
+        golangci_lint_flags: --timeout 5m
+        reporter: ${{ inputs.golangReporter }}
+        workdir: ${{ inputs.golangSourceDir }}
+        fail_on_error: true
+        filter_mode: nofilter
+
+    - name: markdownlint
+      uses: reviewdog/action-markdownlint@v0
+      if: ${{ inputs.markdownEnabled == 'true' }}
+      with:
+        github_token: ${{ inputs.githubToken }}
+        reporter: ${{ inputs.markdownReporter }}
+        filter_mode: nofilter
+        fail_on_error: true
+
+    - name: tflint
+      uses: ./.github/workflows/lint-terraform.yml
+      if: ${{ inputs.terraformEnabled == 'true' }}
+      with:
+        githubToken: ${{ inputs.githubToken }}
+        terraformEnabled: ${{ inputs.terraformEnabled }}
+        terraformReporter: ${{ inputs.terraformReporter }}
