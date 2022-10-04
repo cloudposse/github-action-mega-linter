@@ -1,23 +1,33 @@
-name: 'Example composite GitHub action'
-description: 'Example composite GitHub action'
-author: hello@cloudposse.com
+name: "Mega-Linter"
+description: "A GitHub Action to lint terraform, golang, markdown and yaml code."
+author: Cloud Posse <hello@cloudposse.com>
 branding:
-  icon: 'file'
-  color: 'white'
+  icon: cloud-lightning
+  color: blue
 inputs:
-  param1:
+  githubToken:
+    description: "The GitHub token to use for authentication."
     required: true
-    description: "Input parameter placeholder"
-    default: "true"
-outputs:
-  result1:
-    description: "Output result placeholder"
-    value: "${{ steps.context.outputs.action-result }}"
-runs:
-  using: "composite"
-  steps:
-    - id: context
-      shell: bash
-      run: |
-          echo "::set-output name=action-result::${{ inputs.param1 }}"
 
+  golangReporter:
+    required: true
+    description: The reviewdog reporter to use for golang code.
+    default: "github-pr-check"
+
+  golangSourceDir:
+    required: true
+    description: The directory containing the source code to test
+    default: "."
+
+runs:
+  using: composite
+
+  steps:
+    - name: Invoke workflow without inputs
+      uses: benc-uk/workflow-dispatch@v1
+      with:
+        workflow: Run Linting Checks
+        token: ${{ inputs.githubToken }}
+        inputs:
+          '{ "githubToken": "${{ inputs.githubToken }}", "golangReporter": "github-pr-check", "golangSourceDir":
+          "test/src" }'

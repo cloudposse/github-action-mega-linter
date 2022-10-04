@@ -1,13 +1,12 @@
 <!-- markdownlint-disable -->
+
 ## Inputs
 
 | Name | Description | Default | Required |
 |------|-------------|---------|----------|
-| param1 | Input parameter placeholder | true | true |
+| githubToken | The GitHub token to use for authentication. | N/A | true |
+| golangReporter | The reviewdog reporter to use for golang code. | github-pr-check | true |
+| golangSourceDir | The directory containing the source code to test | . | true |
 
-## Outputs
 
-| Name | Description |
-|------|-------------|
-| result1 | Output result placeholder |
 <!-- markdownlint-restore -->
