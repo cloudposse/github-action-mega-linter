@@ -8,6 +8,10 @@ inputs:
   githubToken:
     description: "The GitHub token to use for authentication."
     required: true
+  golangEnabled:
+    description: "Whether to run golang linting checks."
+    required: true
+    default: "true"
   golangReporter:
     required: true
     description: The reviewdog reporter to use for golang code.
@@ -16,16 +20,30 @@ inputs:
     required: true
     description: The directory containing the source code to test
     default: "."
-  golangEnabled:
-    description: "Whether to run golang linting checks."
+  markdownEnabled:
+    description: "Whether to run markdown linting checks."
     required: true
     default: "true"
+  markdownReporter:
+    required: true
+    description: The reviewdog reporter to use for markdown code.
+    default: "github-pr-check"
+  terraformEnabled:
+    description: "Whether to run terraform linting checks."
+    required: true
+    default: "true"
+  terraformReporter:
+    required: true
+    description: The reviewdog reporter to use for terraform code.
+    default: "github-pr-check"
 
 runs:
   using: composite
   steps:
     - uses: actions/checkout@v3
-    - uses: reviewdog/action-golangci-lint@v2
+
+    - name: golang
+      uses: reviewdog/action-golangci-lint@v2
       if: ${{ inputs.golangEnabled == 'true' }}
       with:
         github_token: ${{ inputs.githubToken }}
@@ -34,3 +52,20 @@ runs:
         workdir: ${{ inputs.golangSourceDir }}
         fail_on_error: true
         filter_mode: nofilter
+
+    - name: markdownlint
+      uses: reviewdog/action-markdownlint@v0
+      if: ${{ inputs.markdownEnabled == 'true' }}
+      with:
+        github_token: ${{ inputs.githubToken }}
+        reporter: ${{ inputs.markdownReporter }}
+        filter_mode: nofilter
+        fail_on_error: true
+
+    - name: tflint
+      uses: ./.github/workflows/lint-terraform
+      if: ${{ inputs.terraformEnabled == 'true' }}
+      with:
+        githubToken: ${{ inputs.githubToken }}
+        terraformEnabled: ${{ inputs.terraformEnabled }}
+        terraformReporter: ${{ inputs.terraformReporter }}
