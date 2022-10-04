@@ -8,26 +8,29 @@ inputs:
   githubToken:
     description: "The GitHub token to use for authentication."
     required: true
-
   golangReporter:
     required: true
     description: The reviewdog reporter to use for golang code.
     default: "github-pr-check"
-
   golangSourceDir:
     required: true
     description: The directory containing the source code to test
     default: "."
+  golangEnabled:
+    description: "Whether to run golang linting checks."
+    required: true
+    default: "true"
 
 runs:
   using: composite
-
   steps:
-    - name: Invoke workflow without inputs
-      uses: benc-uk/workflow-dispatch@v1
+    - uses: actions/checkout@v3
+    - uses: reviewdog/action-golangci-lint@v2
+      if: ${{ inputs.golangEnabled == 'true' }}
       with:
-        workflow: Run Linting Checks
-        token: ${{ inputs.githubToken }}
-        inputs:
-          '{ "githubToken": "${{ inputs.githubToken }}", "golangReporter": "github-pr-check", "golangSourceDir":
-          "test/src" }'
+        github_token: ${{ inputs.githubToken }}
+        golangci_lint_flags: --timeout 5m
+        reporter: ${{ inputs.golangReporter }}
+        workdir: ${{ inputs.golangSourceDir }}
+        fail_on_error: true
+        filter_mode: nofilter
