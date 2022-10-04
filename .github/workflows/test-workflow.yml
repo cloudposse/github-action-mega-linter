@@ -1,4 +1,4 @@
-name: Test example positive
+name: Test Workflow
 on:
   #  # Uncomment when test added first time to register workflow and comment it back after workflow would be registered
   #  #
@@ -18,3 +18,4 @@ jobs:
         id: current
         with:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ github.event.pull_request.head.ref }}

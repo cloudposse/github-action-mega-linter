@@ -19,6 +19,10 @@ on:
         required: true
         description: The directory containing the source code to test
         default: "."
+      ref:
+        description: "The ref to use for lingting."
+        required: true
+        default: ${{ github.event.pull_request.head.ref }}
 
 jobs:
   golang:
