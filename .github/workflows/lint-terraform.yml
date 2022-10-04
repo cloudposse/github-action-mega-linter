@@ -3,10 +3,6 @@ name: lint-terraform
 on:
   workflow_call:
     inputs:
-      githubToken:
-        type: string
-        description: "The GitHub token to use for authentication."
-        required: true
       terraformEnabled:
         description: "Whether to run terraform linting checks."
         type: boolean
@@ -17,6 +13,10 @@ on:
         type: string
         required: true
         default: "github-pr-check"
+    secrets:
+        githubToken:
+          description: "The GitHub token to use for authentication."
+          required: true
 
 jobs:
   # This job finds all directories that have terraform code in them and creates an JSON array of the paths so they can

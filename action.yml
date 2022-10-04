@@ -63,7 +63,7 @@ runs:
         fail_on_error: true
 
     - name: tflint
-      uses: ./.github/workflows/lint-terraform
+      uses: ./.github/workflows/lint-terraform.yml
       if: ${{ inputs.terraformEnabled == 'true' }}
       with:
         githubToken: ${{ inputs.githubToken }}
