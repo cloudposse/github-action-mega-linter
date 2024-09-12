@@ -5,3 +5,4 @@ repository:
   description: Linter for terraform, golang, markdown and yaml code
   homepage: https://cloudposse.com/accelerate
   topics: ""
+
